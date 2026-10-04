@@ -1,0 +1,37 @@
+菜单收纳 0.4.0 / Tray Box 0.4.0
+
+适用：Apple Silicon（M 系列芯片），macOS 26 或更新版本。
+本包未经过 Apple 公证，使用 ad-hoc 签名。
+
+1. 将“菜单收纳.app”拖进旁边的 Applications（应用程序）。
+2. 从“应用程序”打开它，不要在磁盘映像里运行。
+3. 若 macOS 因开发者未验证而阻止打开，在确认文件来源后，进入
+   “系统设置 → 隐私与安全性”，找到本应用的提示并点“仍要打开”。
+   不需要关闭系统安全保护。若提示已损坏或包含恶意软件，不要强行打开，
+   请重新核对下载或反馈问题。
+4. 为“菜单收纳”开启辅助功能、屏幕与系统音频录制权限。
+   授权后回到应用；系统要求重新打开时，退出再打开一次。
+
+点顶栏按钮打开收纳框，点“整理”放回或收进图标。
+可以在“已收纳”和“顶栏”两组之间拖动。点框外或按 Escape 关闭。
+
+更新：先退出旧版，再替换应用。ad-hoc 签名更新后可能需要重新授权；
+若权限已开但无效，可在权限列表移除旧项，再添加“应用程序”里的新副本。
+与其他菜单栏整理软件一起运行可能冲突，请自行退出同类工具后使用。
+卸载：先从顶栏按钮的右键菜单退出，再把应用移到废纸篓。
+
+源码、许可、校验和、反馈：https://github.com/AppApp777/tray-box
+Apple 关于首次打开的说明：https://support.apple.com/zh-cn/102445
+应用包 Contents/Resources 内含 GPLv3 与第三方许可、构建来源信息。
+
+English
+
+Requires Apple Silicon and macOS 26 or later. This is an ad-hoc-signed,
+unnotarized app. Drag it into Applications, then open the installed copy.
+If macOS blocks it because the developer is unverified, verify its source and
+use System Settings > Privacy & Security > Open Anyway for this app.
+Do not disable system-wide protection or override damaged/malware warnings.
+Enable Accessibility and Screen & System Audio Recording for Tray Box.
+Quit and reopen if macOS requests it. Quit the old app before replacing it;
+updates may require granting permissions again. Avoid running multiple
+menu-bar organizers at once. See the repository for usage and source code.

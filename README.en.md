@@ -18,13 +18,18 @@ Interaction illustration with fictional A, B and C icons. Not a screen recording
 
 </div>
 
-## Download and build
+## Download and install
 
 | System | Download |
 |---|---|
-| macOS 26, Apple Silicon | **[Download 0.4.0 source code](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-source.zip)** |
+| macOS 26 or later, Apple Silicon | **[Download the 0.4.0 app (DMG)](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-macos-arm64.dmg)** |
+| Developers and source code | [Complete source with dependencies](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-complete-source.zip) |
 
-This is a source release. Build it yourself with Xcode using the instructions below. A notarized, ready-to-install app is not included. The [release page](https://github.com/AppApp777/tray-box/releases/tag/v0.4.0) includes a SHA-256 checksum for the source archive.
+1. Open the DMG and drag **菜单收纳.app** into **Applications**.
+2. Open the installed app. **This package has not been notarized by Apple.** If macOS blocks it because the developer is unverified, verify its source, then use **System Settings → Privacy & Security → Open Anyway** for this app, as described by [Apple](https://support.apple.com/102445).
+3. Grant Accessibility and Screen & System Audio Recording permissions. Quit and reopen if macOS requests it.
+
+Xcode is not required. The app uses an ad-hoc signature, so updates may require granting permissions again. Quit the old version before replacing it, and avoid running multiple menu-bar organizers at once. See [installation instructions](docs/INSTALL.txt); `SHA256SUMS-app.txt` on the [release page](https://github.com/AppApp777/tray-box/releases/tag/v0.4.0) checks download integrity.
 
 ## Use
 
@@ -50,7 +55,7 @@ Code is licensed under [GNU GPLv3](LICENSE). You may use, modify and redistribut
 
 Report problems and suggestions in [Issues](https://github.com/AppApp777/tray-box/issues), including your macOS version, display setup, affected application and steps to reproduce.
 
-**2026-10-04 · 0.4.0** — First public source release. See the [changelog](CHANGELOG.md).
+**2026-10-04 · 0.4.0** — First open-source release, with a downloadable app and complete source. See the [changelog](CHANGELOG.md).
 
 ## About the author
 

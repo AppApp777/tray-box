@@ -33,4 +33,4 @@ The marker is embedded in the bundle, and both the interface and move/click entr
 
 Preserve AppState initialization, the MenuBarItemService connection, HID handling and the `SetsCursorInBackground` setting. The hidden section's physical divider state differs from whether the panel is visible. Internal generated mouse events are not outside user clicks. Drag, move and temporary-menu restoration all participate in the panel's close guard.
 
-Public distribution packages require their own signing and release validation. The maintainer's local development identity is not included in this source release.
+The downloadable DMG uses ad-hoc signing and has not been notarized. See [distribution instructions](DISTRIBUTION.md) for certificate-free Release builds, packaging, source bundles and verification. The local development identity is not included in the public package.

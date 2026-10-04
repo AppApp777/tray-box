@@ -18,13 +18,18 @@
 
 </div>
 
-## 下载与构建
+## 下载与安装
 
 | 系统 | 下载 |
 |---|---|
-| macOS 26、Apple Silicon | **[下载 0.4.0 源代码](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-source.zip)** |
+| macOS 26 或更新版本、Apple Silicon（M 系列芯片） | **[下载 0.4.0 安装包（DMG）](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-macos-arm64.dmg)** |
+| 开发者与源码 | [完整源码及依赖](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-complete-source.zip) |
 
-本次发布的是源代码，需要用 Xcode 自行构建，步骤见下方“从源码构建”。尚未提供经过 Apple 公证、供直接安装的软件包。下载内容与校验和列在[版本页面](https://github.com/AppApp777/tray-box/releases/tag/v0.4.0)。
+1. 打开 DMG，把“菜单收纳.app”拖进 **Applications（应用程序）**。
+2. 从“应用程序”打开。**本包尚未通过 Apple 公证**；若系统因开发者未验证而拦截，在确认来源后，到“系统设置 → 隐私与安全性”找到本应用的提示，点“仍要打开”。这是 Apple 提供的[单独允许应用的方法](https://support.apple.com/zh-cn/102445)。
+3. 按提示开启辅助功能、屏幕与系统音频录制权限；系统要求重新打开时，退出再打开一次。
+
+不需要安装 Xcode。当前包采用 ad-hoc 签名，更新后可能需要重新授权。请先退出旧版再替换，也请避免同时运行其他菜单栏整理软件。详细步骤见[安装说明](docs/INSTALL.txt)；完整性校验文件 `SHA256SUMS-app.txt` 在[版本页面](https://github.com/AppApp777/tray-box/releases/tag/v0.4.0)。
 
 ## 使用
 
@@ -53,7 +58,7 @@
 
 问题和建议请记在 [Issues](https://github.com/AppApp777/tray-box/issues)，说明系统版本、显示器情况、涉及的应用以及操作步骤。
 
-**2026-10-04 · 0.4.0**：首次公开源码。完整[更新记录](CHANGELOG.md)。
+**2026-10-04 · 0.4.0**：首次开源，提供安装包与完整源码。完整[更新记录](CHANGELOG.md)。
 
 ## 关于作者
 
