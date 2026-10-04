@@ -58,6 +58,10 @@ def main():
     validate_info(info)
     if output('lipo', '-archs', app_source / 'Contents/MacOS/TrayBox').strip() != b'arm64':
         raise ValueError('This release is for Apple Silicon only')
+    for binary in (app_source / 'Contents/MacOS/TrayBox',
+                   app_source / 'Contents/XPCServices/MenuBarItemService.xpc/Contents/MacOS/MenuBarItemService'):
+        if b'default.profraw' in binary.read_bytes():
+            raise ValueError('Coverage-instrumented build; rebuild with -enableCodeCoverage NO')
     if output('git', 'status', '--porcelain', cwd=root).strip():
         raise ValueError('Commit public source and packaging changes before packaging')
     revision = output('git', 'rev-parse', 'HEAD', cwd=root).decode().strip()
