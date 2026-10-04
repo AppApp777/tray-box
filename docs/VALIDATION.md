@@ -22,4 +22,4 @@ The regression and interactive checks used independent fixtures. Passing those c
 - 将包内 XPC 原样放入独立宿主，`start` 请求得到正确回复；未操作真实菜单栏应用。
 - 完整源码包包含 11 项锁定依赖的源码与许可；应用内附第三方声明和构建来源。
 
-包没有经过 Apple 公证，Gatekeeper 不会自动放行。以上检查不代替全新 Mac 的首次下载、手动允许、权限授权和菜单交互验收；这些仍待实测。你正在使用的开发签名版本未被替换。
+包没有经过 Apple 公证，Gatekeeper 不会自动放行。以上检查不代替全新 Mac 的首次下载、手动允许、权限授权和菜单交互验收；这些仍待实测。
