@@ -1,0 +1,11 @@
+name: 使用建议
+description: 描述你想解决的具体问题
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: 哪个操作还不方便
+      description: 说明现在怎么做、希望怎样做。
+    validations:
+      required: true

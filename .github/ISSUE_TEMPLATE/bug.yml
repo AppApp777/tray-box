@@ -1,0 +1,23 @@
+name: 使用中遇到问题
+description: 描述看到的现象和操作步骤
+labels: [bug]
+body:
+  - type: input
+    id: system
+    attributes:
+      label: 系统与版本
+      description: macOS 版本、芯片类型、菜单收纳版本。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 做了什么，出现了什么
+      description: 涉及哪个应用、怎样操作、预期怎样、实际怎样；是否使用外接屏或全屏。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图或补充说明
+      description: 截图中请遮住账号、聊天和其他私人内容。

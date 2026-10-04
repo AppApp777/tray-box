@@ -1,0 +1,16 @@
+build/
+.DS_Store
+*.xcuserstate
+xcuserdata/
+__pycache__/
+*.bak
+*.p12
+*.p8
+*.mobileprovision
+.env*
+# Private work notes do not belong in the public repository.
+AGENTS.md
+CLAUDE.md
+progress.md
+BUGS.md
+HANDOFF.md
