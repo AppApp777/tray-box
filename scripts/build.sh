@@ -11,7 +11,7 @@ if [[ -z "$identity" || "$identity" == "-" ]]; then
 fi
 configuration="${TRAY_BUILD_CONFIGURATION:-Release}"
 mkdir -p build/release.noindex
-xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw -enableCodeCoverage NO \
+xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw CLANG_ENABLE_CODE_COVERAGE=NO \
   -configuration "$configuration" -derivedDataPath build/thaw-derived.noindex \
   -clonedSourcePackagesDirPath build/thaw-packages.noindex \
   -onlyUsePackageVersionsFromResolvedFile \

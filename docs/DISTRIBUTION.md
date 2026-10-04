@@ -9,7 +9,7 @@ The package retains hardened runtime and uses `com.apple.security.cs.disable-lib
 Use a clean public Git checkout with Xcode 26.6. Commit changes before packaging. This command builds without a personal certificate; it does not install, launch or restart any app.
 
 ```sh
-xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw -enableCodeCoverage NO \
+xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw CLANG_ENABLE_CODE_COVERAGE=NO \
   -configuration Release -derivedDataPath build/public-release-derived.noindex \
   -clonedSourcePackagesDirPath build/thaw-packages.noindex \
   -onlyUsePackageVersionsFromResolvedFile ARCHS=arm64 CODE_SIGNING_ALLOWED=NO \

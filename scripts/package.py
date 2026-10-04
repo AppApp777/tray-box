@@ -61,7 +61,7 @@ def main():
     for binary in (app_source / 'Contents/MacOS/TrayBox',
                    app_source / 'Contents/XPCServices/MenuBarItemService.xpc/Contents/MacOS/MenuBarItemService'):
         if b'default.profraw' in binary.read_bytes():
-            raise ValueError('Coverage-instrumented build; rebuild with -enableCodeCoverage NO')
+            raise ValueError('Coverage-instrumented build; rebuild with CLANG_ENABLE_CODE_COVERAGE=NO')
     if output('git', 'status', '--porcelain', cwd=root).strip():
         raise ValueError('Commit public source and packaging changes before packaging')
     revision = output('git', 'rev-parse', 'HEAD', cwd=root).decode().strip()
