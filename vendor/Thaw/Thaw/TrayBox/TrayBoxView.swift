@@ -8,7 +8,7 @@ struct TrayBoxView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("收纳盒").font(.headline)
+                Text("秒收").font(.headline)
                 Spacer()
                 Button(model.editing ? "完成" : "整理") { model.editing.toggle() }
                     .buttonStyle(.borderless).disabled(model.keepsPanelOpen)

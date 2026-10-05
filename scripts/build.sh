@@ -18,9 +18,9 @@ xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw ENABLE_CODE_C
   ARCHS=arm64 CODE_SIGN_IDENTITY="$identity" CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= \
   build > build/thaw-build.log 2>&1 || { tail -60 build/thaw-build.log; exit 1; }
 source_app="build/thaw-derived.noindex/Build/Products/$configuration/Thaw.app"
-app="build/release.noindex/菜单收纳.app"
+app="build/release.noindex/秒收.app"
 # Atomic staging inside build only. The installer alone touches Applications.
-stage="build/release.noindex/.菜单收纳-stage.app"
+stage="build/release.noindex/.秒收-stage.app"
 if [[ -d "$stage" ]]; then rm -rf "$stage"; fi
 ditto "$source_app" "$stage"
 if [[ "${TRAY_FIXTURE_ONLY:-0}" == "1" ]]; then

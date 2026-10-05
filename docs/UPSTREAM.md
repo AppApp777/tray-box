@@ -1,6 +1,6 @@
 # Upstream and local changes
 
-Tray Box is an independent derivative of Thaw, not an official Thaw release.
+MiaoShou is an independent derivative of Thaw, not an official Thaw release.
 
 - Thaw: https://github.com/thaw-app/Thaw
 - Pinned version: 2.0.1
@@ -18,4 +18,6 @@ Local integration changes, dated 2026-10-04:
 - Isolated regression host and fixture-only safeguards.
 - Public build wrappers and cleared development-team defaults in the Xcode project.
 
-The full vendored source is present. Its own README, release workflows and historical documents describe upstream Thaw; follow this repository's root README and `scripts/` for Tray Box.
+The full vendored source is present. Its own README, release workflows and historical documents describe upstream Thaw; follow this repository's root README and `scripts/` for MiaoShou.
+
+Brand update, 2026-10-06: the app is now MiaoShou (秒收), with new application artwork and display names. Bundle identifiers and the underlying menu engine are unchanged.

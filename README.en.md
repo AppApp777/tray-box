@@ -1,6 +1,8 @@
 <div align="center">
 
-# Tray Box · 菜单收纳
+<img src="assets/app-icon.png" width="112" alt="秒收 MiaoShou">
+
+# MiaoShou · 秒收
 
 Keep less-used Mac menu bar icons in a small panel, ready when you need them.
 
@@ -9,7 +11,7 @@ Keep less-used Mac menu bar icons in a small panel, ready when you need them.
 <img src="https://img.shields.io/badge/platform-macOS%2026-303846?style=for-the-badge" alt="macOS 26">
 <img src="https://img.shields.io/badge/chip-Apple%20Silicon-52796F?style=for-the-badge" alt="Apple Silicon">
 <img src="https://img.shields.io/github/license/AppApp777/tray-box?style=for-the-badge" alt="GPLv3 license">
-<img src="https://img.shields.io/badge/version-0.4.0-597A9B?style=for-the-badge" alt="Version 0.4.0">
+<img src="https://img.shields.io/badge/version-0.4.1-597A9B?style=for-the-badge" alt="Version 0.4.1">
 
 <br><br>
 <img src="assets/demo.gif" width="800" alt="Illustration: move A to the menu bar and back while B and C stay hidden">
@@ -22,14 +24,14 @@ Interaction illustration with fictional A, B and C icons. Not a screen recording
 
 | System | Download |
 |---|---|
-| macOS 26 or later, Apple Silicon | **[Download the 0.4.0 app (DMG)](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-macos-arm64.dmg)** |
-| Developers and source code | [Complete source with dependencies](https://github.com/AppApp777/tray-box/releases/download/v0.4.0/tray-box-0.4.0-complete-source.zip) |
+| macOS 26 or later, Apple Silicon | **[Download the 0.4.1 app (DMG)](https://github.com/AppApp777/tray-box/releases/download/v0.4.1/miaoshou-0.4.1-macos-arm64.dmg)** |
+| Developers and source code | [Complete source with dependencies](https://github.com/AppApp777/tray-box/releases/download/v0.4.1/miaoshou-0.4.1-complete-source.zip) |
 
-1. Open the DMG and drag **菜单收纳.app** into **Applications**.
+1. Open the DMG and drag **秒收.app** into **Applications**.
 2. Open the installed app. **This package has not been notarized by Apple.** If macOS blocks it because the developer is unverified, verify its source, then use **System Settings → Privacy & Security → Open Anyway** for this app, as described by [Apple](https://support.apple.com/102445).
 3. Grant Accessibility and Screen & System Audio Recording permissions. Quit and reopen if macOS requests it.
 
-Xcode is not required. The app uses an ad-hoc signature, so updates may require granting permissions again. Quit the old version before replacing it, and avoid running multiple menu-bar organizers at once. See [installation instructions](docs/INSTALL.txt); `SHA256SUMS-app.txt` on the [release page](https://github.com/AppApp777/tray-box/releases/tag/v0.4.0) checks download integrity.
+Xcode is not required. The app uses an ad-hoc signature, so updates may require granting permissions again. Quit the old version before replacing it, and avoid running multiple menu-bar organizers at once. See [installation instructions](docs/INSTALL.txt); `SHA256SUMS-app.txt` on the [release page](https://github.com/AppApp777/tray-box/releases/tag/v0.4.1) checks download integrity.
 
 ## Use
 
@@ -47,7 +49,7 @@ Icon images are cached in memory. Menu bar processing stays on your Mac; the app
 
 ## License and upstream
 
-Tray Box is an independent derivative of [Thaw 2.0.1](https://github.com/thaw-app/Thaw), which builds on [Ice](https://github.com/jordanbaird/Ice). It retains the complete underlying implementation and adds a compact panel, explicit organization controls, and related cache and window-state fixes. It is not an official upstream release.
+MiaoShou is an independent derivative of [Thaw 2.0.1](https://github.com/thaw-app/Thaw), which builds on [Ice](https://github.com/jordanbaird/Ice). It retains the complete underlying implementation and adds a compact panel, explicit organization controls, and related cache and window-state fixes. It is not an official upstream release.
 
 Code is licensed under [GNU GPLv3](LICENSE). You may use, modify and redistribute it under that license; distribution of modified versions carries corresponding source and licensing obligations. Upstream notices are retained. See [upstream details](docs/UPSTREAM.md) and [asset provenance](docs/ASSET_LICENSE.md).
 
@@ -55,7 +57,7 @@ Code is licensed under [GNU GPLv3](LICENSE). You may use, modify and redistribut
 
 Report problems and suggestions in [Issues](https://github.com/AppApp777/tray-box/issues), including your macOS version, display setup, affected application and steps to reproduce.
 
-**2026-10-04 · 0.4.0** — First open-source release, with a downloadable app and complete source. See the [changelog](CHANGELOG.md).
+**2026-10-06 · 0.4.1** — Renamed to MiaoShou (秒收), with a new minimal app icon. See the [changelog](CHANGELOG.md).
 
 ## About the author
 
@@ -77,7 +79,7 @@ cd tray-box
 ./scripts/build.sh
 ```
 
-The output is `build/release.noindex/菜单收纳.app`. Copy it to a stable Applications location before granting permissions. A development signature is intended for local development and is not Developer ID distribution signing or notarization.
+The output is `build/release.noindex/秒收.app`. Copy it to a stable Applications location before granting permissions. A development signature is intended for local development and is not Developer ID distribution signing or notarization.
 
 If you have multiple certificates, select your identity with `TRAY_SIGNING_IDENTITY`. The script does not create, upload or change certificates. Run targeted regression tests with `./scripts/test.sh`. See [development notes](docs/DEVELOPMENT.md).
 

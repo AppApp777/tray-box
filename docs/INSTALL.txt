@@ -1,15 +1,15 @@
-菜单收纳 0.4.0 / Tray Box 0.4.0
+秒收 0.4.1 / MiaoShou 0.4.1
 
 适用：Apple Silicon（M 系列芯片），macOS 26 或更新版本。
 本包未经过 Apple 公证，使用 ad-hoc 签名。
 
-1. 将“菜单收纳.app”拖进旁边的 Applications（应用程序）。
+1. 将“秒收.app”拖进旁边的 Applications（应用程序）。
 2. 从“应用程序”打开它，不要在磁盘映像里运行。
 3. 若 macOS 因开发者未验证而阻止打开，在确认文件来源后，进入
    “系统设置 → 隐私与安全性”，找到本应用的提示并点“仍要打开”。
    不需要关闭系统安全保护。若提示已损坏或包含恶意软件，不要强行打开，
    请重新核对下载或反馈问题。
-4. 为“菜单收纳”开启辅助功能、屏幕与系统音频录制权限。
+4. 为“秒收”开启辅助功能、屏幕与系统音频录制权限。
    授权后回到应用；系统要求重新打开时，退出再打开一次。
 
 点顶栏按钮打开收纳框，点“整理”放回或收进图标。
@@ -31,7 +31,7 @@ unnotarized app. Drag it into Applications, then open the installed copy.
 If macOS blocks it because the developer is unverified, verify its source and
 use System Settings > Privacy & Security > Open Anyway for this app.
 Do not disable system-wide protection or override damaged/malware warnings.
-Enable Accessibility and Screen & System Audio Recording for Tray Box.
+Enable Accessibility and Screen & System Audio Recording for MiaoShou.
 Quit and reopen if macOS requests it. Quit the old app before replacing it;
 updates may require granting permissions again. Avoid running multiple
 menu-bar organizers at once. See the repository for usage and source code.

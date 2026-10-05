@@ -1,6 +1,6 @@
 # Development
 
-The complete application and XPC service are in `vendor/Thaw/Thaw.xcodeproj`. Scheme: `Thaw`. Product executable: `TrayBox`; output bundle is renamed to `菜单收纳.app` by the wrapper script.
+The complete application and XPC service are in `vendor/Thaw/Thaw.xcodeproj`. Scheme: `Thaw`. Product executable: `TrayBox`; output bundle is renamed to `秒收.app` by the wrapper script.
 
 The public build keeps the application identifier `local.miao.traybox` and its companion service identifier. These are application identifiers, not credentials. Team defaults are cleared in the exported Xcode project; provide your own signing identity. Do not run multiple copies of the same bundle at once.
 

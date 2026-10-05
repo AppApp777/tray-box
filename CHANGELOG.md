@@ -1,5 +1,13 @@
 # 更新记录 / Changelog
 
+## 0.4.1 — 2026-10-06
+
+- 应用更名为“秒收”（MiaoShou），面板、菜单、安装包和说明同步更新。
+- 新增蓝色底、白色收纳托盘的简约应用图标。
+- 保持应用标识、已有偏好设置与收纳交互不变。
+
+Renamed the app to MiaoShou (秒收) and added a minimal blue-and-white tray icon. Application identifiers and menu organization behavior remain unchanged.
+
 ## 0.4.0 — 2026-10-04
 
 首次开源，基于完整 Thaw 2.0.1 工程。

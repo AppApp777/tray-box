@@ -1,10 +1,10 @@
-// Copyright 2026 Tray Box contributors. GNU GPLv3.
+// Copyright 2026 MiaoShou contributors. GNU GPLv3.
 // Explanatory diagram only: no screen capture, UI automation or app interaction.
 import AppKit
 import ImageIO
 import UniformTypeIdentifiers
 let output=CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "assets"
-let author=CommandLine.arguments.count > 2 ? CommandLine.arguments[2] : "Tray Box contributors"
+let author=CommandLine.arguments.count > 2 ? CommandLine.arguments[2] : "MiaoShou contributors"
 try FileManager.default.createDirectory(atPath: output, withIntermediateDirectories: true)
 func color(_ rgb:Int)->NSColor {NSColor(calibratedRed:CGFloat((rgb>>16)&255)/255,green:CGFloat((rgb>>8)&255)/255,blue:CGFloat(rgb&255)/255,alpha:1)}
 func rect(_ r:NSRect,_ fill:Int,_ radius:CGFloat=0){color(fill).setFill();NSBezierPath(roundedRect:r,xRadius:radius,yRadius:radius).fill()}
@@ -22,8 +22,11 @@ func frame(_ t:Double,width:Int=960,height:Int=540)->CGImage {
  ctx.cgContext.scaleBy(x:CGFloat(width)/960,y:CGFloat(height)/540)
  rect(NSRect(x:0,y:0,width:960,height:540),0x11161c)
  rect(NSRect(x:520,y:22,width:416,height:496),0x1b232b,24)
- label("菜单收纳",42,426,44,0xf3f6f8,.semibold)
- label("Tray Box",44,387,22,0x8fa4b6,.medium)
+ if let appIcon=NSImage(contentsOfFile:output+"/app-icon.png") {
+  appIcon.draw(in:NSRect(x:38,y:402,width:90,height:90))
+ }
+ label("秒收",142,430,44,0xf3f6f8,.semibold)
+ label("MiaoShou",144,391,22,0x8fa4b6,.medium)
  label("不常用的图标，",44,290,26,0xd0dbe2,.medium)
  label("收进一个小框。",44,250,26,0xd0dbe2,.medium)
  label("整理  →  放回 / 收进",44,174,18,0x9dadbc)
@@ -33,7 +36,7 @@ func frame(_ t:Double,width:Int=960,height:Int=540)->CGImage {
  label("顶栏",554,475,13,0xc4ced6)
  label("⌃",872,471,23,0xe9eef2,.medium)
  rect(NSRect(x:548,y:44,width:360,height:406),0x272e36,18)
- label("收纳盒",568,415,18,0xf2f4f6,.semibold)
+ label("秒收",568,415,18,0xf2f4f6,.semibold)
  label("完成",852,416,14,0x91c8bd)
  label("已收纳",568,377,13,0xacbac6)
  rect(NSRect(x:565,y:262,width:326,height:105),0x303943,11)
@@ -62,7 +65,7 @@ guard CGImageDestinationFinalize(destination) else {fatalError("GIF write failed
 for (name,w,h) in [("preview.png",960,540),("social-preview.png",1280,640)]{
  let url=URL(fileURLWithPath:output).appendingPathComponent(name)
  let target=CGImageDestinationCreateWithURL(url as CFURL,UTType.png.identifier as CFString,1,nil)!
- CGImageDestinationAddImage(target,frame(2.4,width:w,height:h),[kCGImagePropertyPNGDictionary:["Author":author,"Copyright":"© 2026 \(author)","Description":"Tray Box interaction illustration; not a screen recording"]] as CFDictionary)
+ CGImageDestinationAddImage(target,frame(2.4,width:w,height:h),[kCGImagePropertyPNGDictionary:["Author":author,"Copyright":"© 2026 \(author)","Description":"MiaoShou interaction illustration; not a screen recording"]] as CFDictionary)
  guard CGImageDestinationFinalize(target) else {fatalError("PNG write failed")}
 }
 print("Generated fictional interaction diagram and preview images")

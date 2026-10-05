@@ -27,7 +27,11 @@ def output(*args, **kwargs):
 
 def validate_info(info):
     if info.get('CFBundleIdentifier') != 'local.miao.traybox':
-        raise ValueError('Not a Tray Box application')
+        raise ValueError('Not a MiaoShou application')
+    if info.get('CFBundleDisplayName') != '秒收' or info.get('CFBundleName') != '秒收':
+        raise ValueError('Application display name must be 秒收')
+    if info.get('CFBundleIconName') != 'MiaoShou':
+        raise ValueError('Application must use the MiaoShou icon')
     if info.get('TrayBoxFixtureOnly'):
         raise ValueError('Refusing to distribute a fixture-only application')
     if info.get('SUEnableAutomaticChecks') or info.get('SUAutomaticallyUpdate'):
@@ -72,7 +76,7 @@ def main():
     pins_path = root / 'vendor/Thaw/Thaw.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved'
     pins = json.loads(pins_path.read_text())['pins']
     checkouts = {p.name.lower(): p for p in (args.packages.resolve() / 'checkouts').iterdir() if p.is_dir()}
-    notices = ['Tray Box / 菜单收纳 — GNU GPLv3', (root / 'LICENSE').read_text()]
+    notices = ['MiaoShou / 秒收 — GNU GPLv3', (root / 'LICENSE').read_text()]
     for pin in pins:
         checkout = checkouts[pin['identity']]
         if output('git', 'rev-parse', 'HEAD', cwd=checkout).decode().strip() != pin['state']['revision']:
@@ -90,12 +94,12 @@ def main():
     destination = args.output.resolve()
     destination.mkdir(parents=True, exist_ok=False)
     version = info['CFBundleShortVersionString']
-    stem = 'tray-box-' + version
+    stem = 'miaoshou-' + version
     with tempfile.TemporaryDirectory(prefix='tray-box-package-') as temporary:
         temporary = Path(temporary)
         volume = temporary / 'volume'
         volume.mkdir()
-        app = volume / '菜单收纳.app'
+        app = volume / '秒收.app'
         run('ditto', '--norsrc', '--noextattr', app_source, app)
         # Swift object files may retain debug paths despite the Xcode setting.
         # Strip only the staged Mach-O files, before signing them.
@@ -143,7 +147,7 @@ def main():
         (volume / 'Applications').symlink_to('/Applications')
         shutil.copy2(root / 'docs/INSTALL.txt', volume / '安装说明 Installation.txt')
         dmg = destination / (stem + '-macos-arm64.dmg')
-        run('hdiutil', 'create', '-volname', '菜单收纳 ' + version, '-srcfolder', volume,
+        run('hdiutil', 'create', '-volname', '秒收 ' + version, '-srcfolder', volume,
             '-format', 'UDZO', '-fs', 'HFS+', dmg)
         run('hdiutil', 'verify', dmg)
 

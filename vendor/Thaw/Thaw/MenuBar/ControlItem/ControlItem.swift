@@ -883,13 +883,13 @@ final class ControlItem {
 
     /// Creates a menu to show under the control item.
     private func createMenu(with appState: AppState) -> NSMenu {
-        let menu = NSMenu(title: "菜单收纳")
-        let open = NSMenuItem(title: "打开收纳盒", action: #selector(openTrayBox), keyEquivalent: "")
+        let menu = NSMenu(title: "秒收")
+        let open = NSMenuItem(title: "打开秒收", action: #selector(openTrayBox), keyEquivalent: "")
         open.target = self; menu.addItem(open)
         let arrange = NSMenuItem(title: "整理图标", action: #selector(arrangeTrayBox), keyEquivalent: "")
         arrange.target = self; menu.addItem(arrange)
         menu.addItem(.separator())
-        let quit = NSMenuItem(title: "退出菜单收纳", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "退出秒收", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         quit.target = NSApp; menu.addItem(quit)
         return menu
     }
