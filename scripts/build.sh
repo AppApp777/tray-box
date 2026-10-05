@@ -10,12 +10,18 @@ if [[ -z "$identity" || "$identity" == "-" ]]; then
   exit 1
 fi
 configuration="${TRAY_BUILD_CONFIGURATION:-Release}"
+postprocess=NO
+if [[ "$configuration" == "Release" ]]; then
+  # Strip debug/local symbols before Xcode signs the product; keep Debug intact.
+  postprocess=YES
+fi
 mkdir -p build/release.noindex
 xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw ENABLE_CODE_COVERAGE=NO \
   -configuration "$configuration" -derivedDataPath build/thaw-derived.noindex \
   -clonedSourcePackagesDirPath build/thaw-packages.noindex \
   -onlyUsePackageVersionsFromResolvedFile \
   ARCHS=arm64 CODE_SIGN_IDENTITY="$identity" CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= \
+  DEPLOYMENT_POSTPROCESSING="$postprocess" STRIP_INSTALLED_PRODUCT=YES STRIP_STYLE=non-global COPY_PHASE_STRIP="$postprocess" \
   build > build/thaw-build.log 2>&1 || { tail -60 build/thaw-build.log; exit 1; }
 source_app="build/thaw-derived.noindex/Build/Products/$configuration/Thaw.app"
 app="build/release.noindex/秒收.app"

@@ -144,6 +144,9 @@ final class MenuBarItemImageCache: @unchecked Sendable {
     /// invalidate the view that just read it.
     @ObservationIgnored private var trimmedImages = [MenuBarItemTag: (source: CGImage, image: NSImage)]()
 
+    /// Derived AppKit wrappers: reads from a SwiftUI body must not publish.
+    @ObservationIgnored private var displayImages = [MenuBarItemTag: (captured: CapturedImage, image: NSImage)]()
+
     /// Maximum number of images to cache to prevent memory growth
     private static let maxCacheSize = 200
 
@@ -784,7 +787,14 @@ final class MenuBarItemImageCache: @unchecked Sendable {
             }
             // Floor the sleep so a sub-millisecond stored interval cannot
             // truncate to a zero-length sleep and spin the main actor.
-            try? await Task.sleep(for: .seconds(max(interval, Self.minIconRefreshInterval)))
+            // Offscreen captures already have a one-second rate limit. Do not
+            // wake four times per second only to skip three of those wakes.
+            let trayOnly = appState.navigationState.isIceBarPresented
+                && !appState.navigationState.isSearchPresented
+                && !appState.navigationState.isSettingsPresented
+                && !appState.menuBarManager.iceBarPanel.trayModel.editing
+            let floor = trayOnly ? 1.0 : Self.minIconRefreshInterval
+            try? await Task.sleep(for: .seconds(max(interval, floor)), tolerance: .milliseconds(25))
             guard !Task.isCancelled else { break }
 
             let nav = appState.navigationState
@@ -831,7 +841,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
             } else if nav.isIceBarPresented,
                       let current = appState.menuBarManager.iceBarPanel.currentSection
             {
-                sections = [current]
+                sections = current == .hidden
+                    ? appState.menuBarManager.iceBarPanel.trayModel.imageSections : [current]
             } else {
                 // No consumer visible on this tick — keep looping so the
                 // Combine observer can properly cancel the task. Using
@@ -1514,6 +1525,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
 
     /// Handles memory pressure events
     private func handleMemoryPressure() {
+        displayImages.removeAll()
+        trimmedImages.removeAll()
         // Clear half the cache on memory warning
         if !images.isEmpty {
             let targetSize = images.count / 2
@@ -1574,6 +1587,24 @@ final class MenuBarItemImageCache: @unchecked Sendable {
             return entry.value
         }
         return nil
+    }
+
+    /// Reuse the AppKit wrapper while the captured pixels and scale are unchanged.
+    func displayImage(for tag: MenuBarItemTag) -> NSImage? {
+        guard let captured = image(for: tag) else {
+            displayImages.removeValue(forKey: tag)
+            return nil
+        }
+        if let memo = displayImages[tag],
+           memo.captured.cgImage === captured.cgImage, memo.captured.scale == captured.scale {
+            return memo.image
+        }
+        if displayImages.count >= Self.maxCacheSize {
+            displayImages.removeAll(keepingCapacity: true)
+        }
+        let image = captured.nsImage
+        displayImages[tag] = (captured, image)
+        return image
     }
 
     /// Returns the item's image with its transparent left and right margins
@@ -1731,7 +1762,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
         } catch {
             return
         }
-        await operation()
+        // A refresh cancelled while queued must not perform a stale capture.
+        if !Task.isCancelled { await operation() }
         await captureSemaphore.signal()
     }
 
@@ -1880,6 +1912,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
 
             // Remove stale LRU entries for images that no longer exist.
             accessOrder = OrderedSet(accessOrder.lazy.filter { self.images[$0] != nil })
+            displayImages = displayImages.filter { images[$0.key] != nil }
+            trimmedImages = trimmedImages.filter { images[$0.key] != nil }
 
             let afterCount = images.count
             let finalAccessOrderCount = accessOrder.count
@@ -1989,7 +2023,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
         } else if navSnapshot.isIceBarPresented, let section = appState.menuBarManager.iceBarPanel
             .currentSection
         {
-            sectionsNeedingDisplay.append(section)
+            sectionsNeedingDisplay = section == .hidden
+                ? appState.menuBarManager.iceBarPanel.trayModel.imageSections : [section]
         }
 
         await updateCache(
@@ -2009,6 +2044,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
         images = images.filter { !tags.contains($0.key) }
         for tag in tags {
             accessOrder.remove(tag)
+            displayImages.removeValue(forKey: tag)
+            trimmedImages.removeValue(forKey: tag)
         }
     }
 
@@ -2016,6 +2053,8 @@ final class MenuBarItemImageCache: @unchecked Sendable {
     @MainActor
     func clearAll() {
         images.removeAll()
+        displayImages.removeAll()
+        trimmedImages.removeAll()
         accessOrder.removeAll()
         failedCapturesLock.withLock { $0.removeAll() }
     }

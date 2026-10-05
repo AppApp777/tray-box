@@ -4,6 +4,16 @@ import Testing
 
 @Suite("TrayBox integration", .serialized)
 @MainActor struct TrayBoxRegressionTests {
+    @Test("Image capture follows both groups shown in organization mode")
+    func imageConsumersFollowVisibleGroups() {
+        let model = TrayBoxModel()
+        #expect(model.imageSections == [.hidden, .alwaysHidden])
+        model.editing = true
+        #expect(model.imageSections.contains(.visible))
+        #expect(model.imageSections.contains(.hidden))
+        model.editing = false
+        #expect(!model.imageSections.contains(.visible))
+    }
     @Test("Manual mode returns false for a disappearing window, allowing a fresh cache publication")
     func manualModeDoesNotClaimADeferredApply() async throws {
         try await withScratchDefaults { _ in

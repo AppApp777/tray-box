@@ -13,6 +13,10 @@ xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw \
  -only-testing:ThawTests/TrayBoxRegressionTests \
  -only-testing:ThawTests/MidSectionTransitionTests \
  -only-testing:ThawTests/WindowIDsChangedGateTests \
+ -only-testing:ThawTests/MenuBarItemImageCacheObservationTests \
+ -only-testing:ThawTests/MenuBarItemImageCacheGatingTests \
+ -only-testing:ThawTests/MenuBarItemImageCacheDisplayResolutionTests \
+ -only-testing:ThawTests/CapturedImageScaleTests \
  -resultBundlePath "$result" CODE_SIGN_IDENTITY="$identity" CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= \
  test > build/traybox-tests.log 2>&1 || { tail -70 build/traybox-tests.log; exit 1; }
 xcrun xcresulttool get test-results summary --path "$result" --compact

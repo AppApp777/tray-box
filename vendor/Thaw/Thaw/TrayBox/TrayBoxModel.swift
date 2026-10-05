@@ -11,6 +11,9 @@ final class TrayBoxModel {
     var message = "点击图标打开菜单，点整理调整位置"
     var hasError = false
     var keepsPanelOpen: Bool { busy || dragging || restoringMenu }
+    var imageSections: [MenuBarSection.Name] {
+        editing ? [.hidden, .alwaysHidden, .visible] : [.hidden, .alwaysHidden]
+    }
     private weak var appState: AppState?
     private(set) var displayID: CGDirectDisplayID = 0
 
@@ -24,7 +27,7 @@ final class TrayBoxModel {
         return sections.flatMap { appState.itemManager.itemCache.managedItems(for: $0) }
             .filter { !$0.isControlItem && !$0.isSystemClone && TrayBoxConfiguration.accepts($0) }
     }
-    func image(for item: MenuBarItem) -> NSImage? { appState?.imageCache.images[item.tag]?.nsImage ?? item.sourceApplication?.icon }
+    func image(for item: MenuBarItem) -> NSImage? { appState?.imageCache.displayImage(for: item.tag) ?? item.sourceApplication?.icon }
     func name(for item: MenuBarItem) -> String {
         if let title = item.title, title.hasPrefix("thaw.baseline.fixture.") {
             return "测试 " + String(title.suffix(1))
@@ -33,8 +36,14 @@ final class TrayBoxModel {
     }
     func refresh() async {
         guard let appState, !busy, !dragging else { return }
+        busy = true
+        defer { busy = false }
         await appState.itemManager.cacheItemsRegardless(skipRecentMoveCheck: true, skipSavedLayoutApply: true)
-        await appState.imageCache.updateCacheWithoutChecks(sections: [.visible, .hidden, .alwaysHidden])
+        await appState.imageCache.updateCacheWithoutChecks(sections: imageSections)
+    }
+    func refreshVisibleImages() async {
+        guard let appState, !busy, !dragging else { return }
+        await appState.imageCache.updateCache(sections: imageSections)
     }
     private func fresh(_ item: MenuBarItem, from items: [MenuBarItem]) -> MenuBarItem? {
         let matches = items.filter {

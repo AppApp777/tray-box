@@ -317,7 +317,9 @@ final class AppState {
         Task { [weak self] in
             try? await Task.sleep(for: .seconds(1))
             guard let self else { return }
-            await self.imageCache.updateCacheWithoutChecks(sections: MenuBarSection.Name.allCases)
+            // A closed tray has no image consumer. Opening it requests the
+            // current sections and starts live refresh on demand.
+            await self.imageCache.updateCache()
             if self.imageCache.cacheSize > 15 {
                 self.imageCache.logCacheStatus("Periodic update")
             }

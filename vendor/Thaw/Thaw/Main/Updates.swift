@@ -159,6 +159,9 @@ final class UpdatesManager: NSObject {
     /// Performs the initial setup of the manager.
     func performSetup(with appState: AppState) {
         self.appState = appState
+        // This fork has no upstream updater. Do not instantiate Sparkle or
+        // subscribe to its state just to keep an unused controller stopped.
+        guard Constants.bundleIdentifier != "local.miao.traybox" else { return }
         _ = updaterController
         configureCancellables()
     }

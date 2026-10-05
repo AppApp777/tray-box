@@ -15,6 +15,54 @@ import Testing
 struct MenuBarItemImageCacheObservationTests {
     @Test
     @MainActor
+    func trayImageReadsReuseWrappersWithoutPublishing() throws {
+        let tag = makeTag(title: "Tray", windowID: 3)
+        let image = try #require(makeOpaqueImage())
+        let cache = MenuBarItemImageCache(images: [tag: .init(cgImage: image, scale: 2)])
+        let changed = OSAllocatedUnfairLock(initialState: false)
+        let first = try #require(cache.displayImage(for: tag))
+        withObservationTracking {
+            #expect(cache.displayImage(for: tag) === first)
+        } onChange: { changed.withLock { $0 = true } }
+        for _ in 0..<100 {
+            #expect(cache.displayImage(for: tag) === first)
+        }
+        #expect(first.size.width == 1)
+        #expect(!changed.withLock { $0 })
+    }
+
+    @Test
+    @MainActor
+    func clearAllReleasesBothDerivedImageCaches() throws {
+        let tag = makeTag(title: "Tray", windowID: 4)
+        let cache = MenuBarItemImageCache(images: [tag: .init(cgImage: try #require(makeOpaqueImage()), scale: 1)])
+        weak var display = cache.displayImage(for: tag)
+        weak var trimmed = cache.trimmedImage(for: tag)
+        #expect(display != nil && trimmed != nil)
+        cache.clearAll()
+        #expect(display == nil && trimmed == nil)
+        #expect(cache.displayImage(for: tag) == nil)
+        #expect(cache.cacheSize == 0 && cache.lruEntryCount == 0)
+    }
+
+    @Test
+    @MainActor
+    func cancelledCaptureDoesNotRunAndReleasesItsPermit() async {
+        let cache = MenuBarItemImageCache()
+        var ranCancelledWork = false
+        let task = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            await cache.withCapturePermit { ranCancelledWork = true }
+        }
+        await task.value
+        var nextCaptureRan = false
+        await cache.withCapturePermit { nextCaptureRan = true }
+        #expect(!ranCancelledWork)
+        #expect(nextCaptureRan)
+    }
+
+    @Test
+    @MainActor
     func trimmedImageLookupDoesNotPublishLRUBookkeeping() throws {
         let tag = MenuBarItemTag(
             namespace: .string("com.example.search-test"),

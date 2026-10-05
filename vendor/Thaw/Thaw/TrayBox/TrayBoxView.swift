@@ -32,6 +32,9 @@ struct TrayBoxView: View {
         .padding(16).frame(width: 368, height: model.editing ? 490 : 330)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(.separator, lineWidth: 0.5))
+        .task(id: model.editing) {
+            if model.editing { await model.refreshVisibleImages() }
+        }
     }
     private func group(_ section: MenuBarSection.Name, title: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {

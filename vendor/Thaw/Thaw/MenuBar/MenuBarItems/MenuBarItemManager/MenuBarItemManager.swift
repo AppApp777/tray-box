@@ -266,6 +266,9 @@ final class MenuBarItemManager {
 
     /// Timer for lightweight periodic cache checks.
     private var cacheTickCancellable: AnyCancellable?
+    private var cachePollingObservationTask: Task<Void, Never>?
+    private var cachePollTask: Task<Void, Never>?
+    private var cachePollInterval: TimeInterval?
 
     /// Persisted identifiers of menu bar items we've already seen.
     var knownItemIdentifiers = Set<String>()
@@ -277,6 +280,8 @@ final class MenuBarItemManager {
         rehideTimer?.invalidate()
         rehideCancellable?.cancel()
         cacheTickCancellable?.cancel()
+        cachePollingObservationTask?.cancel()
+        cachePollTask?.cancel()
         menuOpenCheckTask?.cancel()
         navigationStateObservationTask?.cancel()
     }
@@ -1944,23 +1949,42 @@ final class MenuBarItemManager {
             }
         }
 
-        // Rescan on menu bar window-list changes. cacheItemsIfNeeded compares
-        // the current items-only window IDs against the cached set and recaches
-        // only when they differ, so this catches both late-registering items
-        // (background-only apps like OneDrive) and the transient bundle-ID
-        // marker windows that source-PID marker-pair resolution depends on,
-        // which can appear and disappear between sparser app-event triggers. A
-        // short interval keeps marker-pair latency low; the windowID comparison
-        // bails fast and triggers no recache when nothing changed.
-        cacheTickCancellable = Timer.publish(every: 3, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                Task { [weak self] in
-                    await self?.cacheItemsIfNeeded()
-                }
+        // Events and panel opening refresh immediately. A sparse fallback
+        // catches late status items; identity settling keeps the fast cadence.
+        cachePollingObservationTask?.cancel()
+        cachePollingObservationTask = Task { [weak self] in
+            let changes = Observations { [weak self] in
+                guard let self, let appState = self.appState else { return false }
+                return appState.navigationState.isIceBarPresented
+                    || appState.navigationState.isSearchPresented
+                    || appState.navigationState.isSettingsPresented
+                    || self.isInStartupSettling
+                    || self.itemCache.managedItems.contains(where: { $0.sourcePID == nil && !$0.isControlItem })
             }
+            for await needsFastPolling in changes {
+                guard let self else { return }
+                self.configureCachePolling(needsFastPolling: needsFastPolling)
+            }
+        }
 
         cancellables = c
+    }
+
+    private func configureCachePolling(needsFastPolling: Bool) {
+        let interval: TimeInterval = needsFastPolling ? 3 : 30
+        guard cachePollInterval != interval else { return }
+        cachePollInterval = interval
+        cacheTickCancellable?.cancel()
+        cacheTickCancellable = Timer.publish(every: interval, tolerance: interval / 5, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self, self.cachePollTask == nil else { return }
+                self.cachePollTask = Task { [weak self] in
+                    guard let self else { return }
+                    defer { self.cachePollTask = nil }
+                    await self.cacheItemsIfNeeded()
+                }
+            }
     }
 
     /// Returns a Boolean value that indicates whether the most recent

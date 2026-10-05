@@ -23,9 +23,6 @@ final class IceBarPanel: NSPanel {
     /// The shared app state.
     private weak var appState: AppState?
 
-    /// Manager for the Thaw Bar's color.
-    private let colorManager = IceBarColorManager()
-
     /// The currently displayed section.
     private(set) var currentSection: MenuBarSection.Name?
 
@@ -75,7 +72,11 @@ final class IceBarPanel: NSPanel {
     func performSetup(with appState: AppState) {
         self.appState = appState
         configureCancellables()
-        colorManager.performSetup(with: self)
+    }
+
+    /// Outside-click hooks are only useful while a panel can be closed.
+    private func startOutsideClickMonitoring() {
+        guard outsideMonitor == nil, localMonitor == nil else { return }
         outsideMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
             MainActor.assumeIsolated { self?.outsideClick(event) }
         }
@@ -87,6 +88,13 @@ final class IceBarPanel: NSPanel {
             if event.type != .keyDown, event.window !== self { self.outsideClick(event) }
             return event
         }
+    }
+
+    private func stopOutsideClickMonitoring() {
+        if let outsideMonitor { NSEvent.removeMonitor(outsideMonitor) }
+        if let localMonitor { NSEvent.removeMonitor(localMonitor) }
+        outsideMonitor = nil
+        localMonitor = nil
     }
 
     /// Configures the internal observers.
@@ -240,14 +248,8 @@ final class IceBarPanel: NSPanel {
 
         updateOrigin(for: screen)
 
-        // Color manager must be updated after updating the panel's origin,
-        // but before it is shown.
-        //
-        // Color manager handles frame changes automatically, but does so on
-        // the main queue, so we need to update manually once before showing
-        // the panel to prevent the color from flashing.
-        colorManager.updateAllProperties(with: frame, screen: screen)
-
+        // TrayBoxView uses native material, not the upstream wallpaper tint.
+        startOutsideClickMonitoring()
         NSApp.activate(ignoringOtherApps: true)
         makeKeyAndOrderFront(nil)
 
@@ -310,6 +312,7 @@ final class IceBarPanel: NSPanel {
         CustomTooltipPanel.shared.dismiss()
         cacheTask?.cancel()
         cacheTask = nil
+        stopOutsideClickMonitoring()
         contentView = nil
         orderOut(nil)
         super.close()
