@@ -54,7 +54,7 @@ final class IceBarPanel: NSPanel {
             backing: .buffered,
             defer: false
         )
-        self.title = "菜单收纳 · 收纳盒"
+        self.title = "秒收"
         self.isReleasedWhenClosed = false
         self.titlebarAppearsTransparent = true
         self.isMovableByWindowBackground = false
