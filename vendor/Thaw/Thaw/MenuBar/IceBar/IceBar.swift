@@ -293,11 +293,19 @@ final class IceBarPanel: NSPanel {
 
     private func outsideClick(_ event: NSEvent) {
         guard event.cgEvent?.getIntegerValueField(.eventSourceUnixProcessID) != Int64(getpid()) else { return }
+        let click = Self.clickLocation(event, fallback: NSEvent.mouseLocation)
         guard isVisible, !trayModel.keepsPanelOpen,
-              !frame.contains(NSEvent.mouseLocation),
-              appState?.menuBarManager.controlItem(withName: .visible)?.window?.frame.contains(NSEvent.mouseLocation) != true else { return }
-        diagLog.debug("TrayBox outside click: \(NSStringFromPoint(NSEvent.mouseLocation))")
+              !frame.contains(click),
+              appState?.menuBarManager.controlItem(withName: .visible)?.window?.frame.contains(click) != true else { return }
+        diagLog.notice("TrayBox outside click: \(NSStringFromPoint(click)); frame=\(NSStringFromRect(frame))")
         hide()
+    }
+
+    static func clickLocation(_ event: NSEvent, fallback: CGPoint) -> CGPoint {
+        // The pointer may already have moved when a delivered event is handled.
+        // CGEvent provides its own global AppKit coordinates, including screens
+        // above or beside the primary display.
+        event.cgEvent?.unflippedLocation ?? fallback
     }
 
     func dismissForMenu() { performClosePanel() }
@@ -308,7 +316,7 @@ final class IceBarPanel: NSPanel {
     }
 
     private func performClosePanel() {
-        diagLog.debug("TrayBox panel closed")
+        diagLog.notice("TrayBox panel closed")
         CustomTooltipPanel.shared.dismiss()
         cacheTask?.cancel()
         cacheTask = nil

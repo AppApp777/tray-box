@@ -4,6 +4,19 @@ import Testing
 
 @Suite("TrayBox integration", .serialized)
 @MainActor struct TrayBoxRegressionTests {
+    @Test("Close decisions use the click event, even after the pointer moves")
+    func clickCoordinatesDoNotFollowTheLaterPointer() throws {
+        let inside = try #require(CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown,
+            mouseCursorPosition: CGPoint(x: 950, y: 180), mouseButton: .left))
+        let event = try #require(NSEvent(cgEvent: inside))
+        let bounds = CGRect(x: inside.unflippedLocation.x - 40,
+            y: inside.unflippedLocation.y - 40, width: 80, height: 80)
+        #expect(bounds.contains(IceBarPanel.clickLocation(event, fallback: CGPoint(x: -9000, y: -9000))))
+        let outside = try #require(CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown,
+            mouseCursorPosition: CGPoint(x: 30, y: 30), mouseButton: .left))
+        #expect(!bounds.contains(IceBarPanel.clickLocation(try #require(NSEvent(cgEvent: outside)),
+            fallback: inside.unflippedLocation)))
+    }
     @Test("Image capture follows both groups shown in organization mode")
     func imageConsumersFollowVisibleGroups() {
         let model = TrayBoxModel()

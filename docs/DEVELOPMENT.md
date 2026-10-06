@@ -19,7 +19,7 @@ Build prerequisites: Apple Silicon, macOS 26, Xcode 26.6 and a locally available
 ./scripts/test.sh
 ```
 
-The shared test scheme sets `TRAYBOX_UNIT_TESTS=1` before initialization. The test host skips normal app setup, status-item creation and duplicate-instance termination. The script selects the tray interaction regressions, divider/window gates, and image-cache observation, gating, display and scale regressions; it is not the complete inherited upstream suite. The 0.4.2 candidate passed 57 tests.
+The shared test scheme sets `TRAYBOX_UNIT_TESTS=1` before initialization. The test host skips normal app setup, status-item creation and duplicate-instance termination. The script selects the tray interaction regressions, divider/window gates, and image-cache observation, gating, display and scale regressions; it is not the complete inherited upstream suite. The 0.4.2 candidate passed 58 tests.
 
 A fixture-only build is available for development:
 
