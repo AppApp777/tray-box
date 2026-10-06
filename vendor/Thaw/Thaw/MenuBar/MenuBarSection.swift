@@ -237,9 +237,12 @@ final class MenuBarSection {
 
     /// Shows the section.
     func show(triggeredByHotkey: Bool = false) {
-        guard let menuBarManager, isHidden else {
+        guard let menuBarManager else {
             return
         }
+        // The OS can hide an accessory window without changing desiredState.
+        // An explicit reopen must restore the panel in that case.
+        if !isHidden && (!useIceBar || menuBarManager.iceBarPanel.isVisible) { return }
 
         menuBarManager.updateLastShowTimestamp()
 

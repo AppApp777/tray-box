@@ -487,6 +487,10 @@ final class AppState {
 
     /// Deactivates the app and sets its activation policy.
     func deactivate(withPolicy policy: NSApplication.ActivationPolicy? = nil) {
+        // Closing an unrelated settings/prewarm window must not deactivate the
+        // currently presented tray. AppKit can order out accessory panels on
+        // that policy transition without calling their close implementation.
+        guard !navigationState.isIceBarPresented else { return }
         if let policy {
             NSApp.setActivationPolicy(policy)
         }

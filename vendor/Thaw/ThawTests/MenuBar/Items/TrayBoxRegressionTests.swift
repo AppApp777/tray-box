@@ -4,6 +4,15 @@ import Testing
 
 @Suite("TrayBox integration", .serialized)
 @MainActor struct TrayBoxRegressionTests {
+    @Test("A settings/prewarm close cannot deactivate a presented tray")
+    func trayPresentationProtectsApplicationActivation() {
+        let state = AppState()
+        let policy = NSApp.activationPolicy()
+        defer { NSApp.setActivationPolicy(policy) }
+        state.navigationState.isIceBarPresented = true
+        state.deactivate(withPolicy: policy == .regular ? .accessory : .regular)
+        #expect(NSApp.activationPolicy() == policy)
+    }
     @Test("Close decisions use the click event, even after the pointer moves")
     func clickCoordinatesDoNotFollowTheLaterPointer() throws {
         let inside = try #require(CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown,
