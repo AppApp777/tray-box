@@ -1,3 +1,4 @@
+#if !MIAOSHOU_COMPACT
 //
 //  UpdatesManagerTests.swift
 //  Project: Thaw
@@ -201,3 +202,5 @@ struct UpdatesManagerTests {
         }
     }
 }
+
+#endif

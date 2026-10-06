@@ -15,6 +15,67 @@ import Testing
 struct MenuBarItemImageCacheObservationTests {
     @Test
     @MainActor
+    func idleCacheReleasesPixelsAfterGracePeriod() async throws {
+        let tag = makeTag(title: "Idle", windowID: 90)
+        let cache = MenuBarItemImageCache(images: [tag: .init(cgImage: try #require(makeOpaqueImage()), scale: 1)])
+        weak var display = cache.displayImage(for: tag)
+        cache.setImageConsumerVisible(false, idleDelay: .milliseconds(20))
+        #expect(cache.cacheSize == 1)
+        for _ in 0..<100 {
+            if cache.cacheSize == 0 { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        #expect(cache.cacheSize == 0)
+        #expect(display == nil)
+    }
+
+    @Test
+    @MainActor
+    func quickReopeningKeepsTheExistingPixels() async throws {
+        let tag = makeTag(title: "Reopen", windowID: 91)
+        let cache = MenuBarItemImageCache(images: [tag: .init(cgImage: try #require(makeOpaqueImage()), scale: 1)])
+        let display = try #require(cache.displayImage(for: tag))
+        cache.setImageConsumerVisible(false, idleDelay: .milliseconds(40))
+        cache.setImageConsumerVisible(true)
+        try await Task.sleep(for: .milliseconds(70))
+        #expect(cache.cacheSize == 1)
+        #expect(cache.displayImage(for: tag) === display)
+    }
+
+    @Test
+    @MainActor
+    func reopeningCancelsAPurgeWaitingBehindCapture() async throws {
+        let tag = makeTag(title: "Queued", windowID: 92)
+        let cache = MenuBarItemImageCache(images: [tag: .init(cgImage: try #require(makeOpaqueImage()), scale: 1)])
+        let entered = OSAllocatedUnfairLock(initialState: false)
+        let release = OSAllocatedUnfairLock(initialState: false)
+        defer { release.withLock { $0 = true } }
+        let capture = Task {
+            await cache.withCapturePermit {
+                entered.withLock { $0 = true }
+                while !release.withLock({ $0 }) {
+                    try? await Task.sleep(for: .milliseconds(5))
+                }
+            }
+        }
+        for _ in 0..<100 {
+            if entered.withLock({ $0 }) { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        try #require(entered.withLock { $0 })
+        cache.setImageConsumerVisible(false, idleDelay: .milliseconds(5))
+        try await Task.sleep(for: .milliseconds(25))
+        cache.setImageConsumerVisible(true)
+        cache.setImageConsumerVisible(false, idleDelay: .milliseconds(200))
+        release.withLock { $0 = true }
+        await capture.value
+        try await Task.sleep(for: .milliseconds(40))
+        #expect(cache.cacheSize == 1, "A cancelled older purge must not erase the reopened cache")
+        cache.setImageConsumerVisible(true)
+    }
+
+    @Test
+    @MainActor
     func trayImageReadsReuseWrappersWithoutPublishing() throws {
         let tag = makeTag(title: "Tray", windowID: 3)
         let image = try #require(makeOpaqueImage())

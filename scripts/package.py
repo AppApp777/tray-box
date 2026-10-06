@@ -40,6 +40,17 @@ def validate_info(info):
         raise ValueError('Review the documented system requirements first')
 
 
+def validate_compact_layout(app, linked_libraries):
+    if 'Sparkle.framework/' in linked_libraries:
+        raise ValueError('The disabled upstream updater must not remain linked')
+    if (app / 'Contents/Frameworks/Sparkle.framework').exists():
+        raise ValueError('The disabled updater must not be bundled')
+    for path in (app / 'Contents/Resources').glob('*.lproj'):
+        language = path.stem.split('-')[0]
+        if language not in ('Base', 'en', 'zh'):
+            raise ValueError('Unexpected unused localization: ' + path.name)
+
+
 def archive_into(archive, repo, revision, prefix):
     data = output('git', 'archive', '--format=zip', revision, cwd=repo)
     with zipfile.ZipFile(io.BytesIO(data)) as source:
@@ -60,6 +71,7 @@ def main():
     app_source = args.app.resolve()
     info = plistlib.loads((app_source / 'Contents/Info.plist').read_bytes())
     validate_info(info)
+    validate_compact_layout(app_source, output('otool', '-L', app_source / 'Contents/MacOS/TrayBox').decode())
     if output('lipo', '-archs', app_source / 'Contents/MacOS/TrayBox').strip() != b'arm64':
         raise ValueError('This release is for Apple Silicon only')
     for binary in (app_source / 'Contents/MacOS/TrayBox',
@@ -131,10 +143,8 @@ def main():
         targets.append(app)
         for index, target in enumerate(targets):
             entitlements = {}
-            if target.suffix != '.framework':
-                # Teamless signatures cannot satisfy same-team library validation.
-                # Retain hardened runtime, without the development debugger grant.
-                entitlements['com.apple.security.cs.disable-library-validation'] = True
+            # The compact app loads only Apple's dynamic libraries. Hardened
+            # runtime needs no exception for the removed third-party updater.
             entitlements_path = temporary / ('entitlements-' + str(index) + '.plist')
             entitlements_path.write_bytes(plistlib.dumps(entitlements))
             run('codesign', '--force', '--sign', '-', '--timestamp=none', '--options', 'runtime',

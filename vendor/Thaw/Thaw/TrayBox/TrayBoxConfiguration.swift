@@ -3,6 +3,7 @@ import AppKit
 
 @MainActor
 enum TrayBoxConfiguration {
+    static var usesCompactInterface: Bool { Constants.bundleIdentifier == "local.miao.traybox" }
     static var isUnitTesting: Bool { ProcessInfo.processInfo.environment["TRAYBOX_UNIT_TESTS"] == "1" }
     static var fixtureOnly: Bool { CommandLine.arguments.contains("--fixture-only") || Bundle.main.object(forInfoDictionaryKey: "TrayBoxFixtureOnly") as? Bool == true }
     static var automaticPlacementAllowed: Bool {

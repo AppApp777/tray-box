@@ -8,9 +8,10 @@
 
 import Combine
 import Observation
-import Sparkle
 import SwiftUI
 
+#if !MIAOSHOU_COMPACT
+import Sparkle
 /// Manager for app updates.
 @MainActor
 @Observable
@@ -353,6 +354,45 @@ extension UpdatesManager: @MainActor SPUStandardUserDriverDelegate {
         appState.userNotificationManager.removeDeliveredNotifications(with: [.updateCheck])
     }
 }
+
+#else
+/// Interface retained for old settings; this product has no background updater.
+@MainActor
+@Observable
+final class UpdatesManager: NSObject {
+    var canCheckForUpdates: Bool { false }
+    var lastUpdateCheckDate: Date? { nil }
+    @ObservationIgnored var openURL: @MainActor (URL) -> Void = { NSWorkspace.shared.open($0) }
+    var automaticallyChecksForUpdates: Bool { get { false } set {} }
+    var automaticallyDownloadsUpdates: Bool { get { false } set {} }
+    var updateChannel: UpdateChannel { get { Self.storedUpdateChannel() } set {} }
+    func performSetup(with _: AppState) {}
+    func startUpdaterIfNeeded() {}
+    @objc func checkForUpdates() {}
+    func checkForAlphaUpdateAfterCompatibilityWarning() {}
+    static nonisolated func storedUpdateChannel(
+        on version: OperatingSystemVersion = ProcessInfo.processInfo.operatingSystemVersion
+    ) -> UpdateChannel {
+        let stored: UpdateChannel = if let raw = Defaults.store.string(forKey: "UpdateChannel"),
+                                       let channel = UpdateChannel(rawValue: raw)
+        {
+            channel
+        } else {
+            Defaults.store.bool(forKey: "AllowsBetaUpdates") ? .beta : .stable
+        }
+        // A channel the running system cannot be offered is not honored
+        // either, or a user who selected alpha and then moved back to a
+        // supported macOS would stay pinned to the rewrite's feed and be
+        // offered nothing at all. Beta rather than stable: they had opted
+        // out of stable, and that much of the choice still applies.
+        guard stored.isAvailable(on: version) else {
+            return .beta
+        }
+        return stored
+    }
+}
+
+#endif
 
 // MARK: - UpdateChannel
 

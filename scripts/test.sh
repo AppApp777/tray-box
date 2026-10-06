@@ -11,6 +11,8 @@ xcodebuild -quiet -project vendor/Thaw/Thaw.xcodeproj -scheme Thaw \
  -destination "platform=macOS,arch=arm64" -configuration Debug -derivedDataPath build/thaw-derived.noindex \
  -clonedSourcePackagesDirPath build/thaw-packages.noindex -onlyUsePackageVersionsFromResolvedFile \
  -only-testing:ThawTests/TrayBoxRegressionTests \
+ -only-testing:ThawTests/TrayBoxLightweightTests \
+ -only-testing:ThawTests/UpdateChannelTests \
  -only-testing:ThawTests/MidSectionTransitionTests \
  -only-testing:ThawTests/WindowIDsChangedGateTests \
  -only-testing:ThawTests/MenuBarItemImageCacheObservationTests \

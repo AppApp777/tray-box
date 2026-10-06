@@ -231,6 +231,9 @@ final class MenuBarItemImageCache: @unchecked Sendable {
     /// The currently running live-refresh task, if any.
     private var liveRefreshTask: Task<Void, Never>?
 
+    @ObservationIgnored private var idleReleaseTask: Task<Void, Never>?
+    @ObservationIgnored private var hasImageConsumer = false
+
     /// Timestamp of the last offscreen SkyLight batch capture, used to
     /// rate-limit how often the leaking `SLSWindowListCreateImageFromArrayProxying`
     /// path is invoked (defense in depth for #759).
@@ -298,6 +301,7 @@ final class MenuBarItemImageCache: @unchecked Sendable {
         memoryPressureSource?.cancel()
         currentUpdateTask?.cancel()
         liveRefreshTask?.cancel()
+        idleReleaseTask?.cancel()
         iconRefreshIntervalObservationTask?.cancel()
         navigationStateObservationTask?.cancel()
         averageColorInfoObservationTask?.cancel()
@@ -745,6 +749,7 @@ final class MenuBarItemImageCache: @unchecked Sendable {
                 self.makeNavigationStateSnapshot()
             }
             let needsRefresh = self.hasVisibleCaptureConsumer(nav: nav)
+            self.setImageConsumerVisible(needsRefresh)
 
             if needsRefresh {
                 // Already running — don't restart
@@ -763,6 +768,33 @@ final class MenuBarItemImageCache: @unchecked Sendable {
                 self.liveRefreshTask?.cancel()
                 self.liveRefreshTask = nil
             }
+        }
+    }
+
+    /// Keep quick reopenings warm, then release pixels without a polling timer.
+    @MainActor
+    func setImageConsumerVisible(_ visible: Bool, idleDelay: Duration = .seconds(60)) {
+        let wasVisible = hasImageConsumer
+        hasImageConsumer = visible
+        if visible {
+            idleReleaseTask?.cancel()
+            idleReleaseTask = nil
+            return
+        }
+        // The last capture may publish after the panel closes. Schedule on
+        // that transition even if its first pixels have not arrived yet.
+        guard idleReleaseTask == nil, wasVisible || !images.isEmpty else { return }
+        idleReleaseTask = Task { @MainActor [weak self] in
+            do { try await Task.sleep(for: idleDelay) }
+            catch { return }
+            guard !Task.isCancelled, let self, !self.hasImageConsumer else { return }
+            // A capture already in progress must finish before the purge. A
+            // reopened consumer cancels this task even while it waits here.
+            await self.withCapturePermit { [weak self] in
+                guard !Task.isCancelled, let self, !self.hasImageConsumer else { return }
+                self.clearAll()
+            }
+            if !Task.isCancelled { self.idleReleaseTask = nil }
         }
     }
 

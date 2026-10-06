@@ -56,13 +56,21 @@ final class AppState {
     let hidEventManager = HIDEventManager()
 
     /// Manager for settings profiles.
-    let profileManager = ProfileManager()
+    @ObservationIgnored private var profileManagerStorage: ProfileManager?
+    var profileManager: ProfileManager {
+        if let profileManagerStorage { return profileManagerStorage }
+        let manager = ProfileManager()
+        profileManagerStorage = manager
+        if !TrayBoxConfiguration.isUnitTesting { manager.performSetup(with: self) }
+        return manager
+    }
+    var loadedProfileManager: ProfileManager? { profileManagerStorage }
 
     /// Manager for app updates.
     let updatesManager = UpdatesManager()
 
     /// Manager for user notifications.
-    let userNotificationManager = UserNotificationManager()
+    @ObservationIgnored lazy var userNotificationManager = UserNotificationManager()
 
     /// Storage for internal observers.
     private var cancellables = Set<AnyCancellable>()
@@ -132,8 +140,10 @@ final class AppState {
         imageCache.performSetup(with: self)
         diagLog.debug("setupTask: imageCache setup complete")
         updatesManager.performSetup(with: self)
-        userNotificationManager.performSetup(with: self)
-        profileManager.performSetup(with: self)
+        if !TrayBoxConfiguration.usesCompactInterface {
+            userNotificationManager.performSetup(with: self)
+            _ = profileManager
+        }
 
         configureCancellables()
         diagLog.debug("setupTask: AppState setup sequence complete")

@@ -1808,13 +1808,14 @@ final class MenuBarItemManager {
             // that gate then keeps savedOrder from racing the
             // profile apply on launch.
             if let appState = self.appState,
-               appState.profileManager.activeProfileID != nil
+               let profileManager = appState.loadedProfileManager,
+               profileManager.activeProfileID != nil
             {
                 MenuBarItemManager.diagLog.info(
                     "\(reason): applying active display profile after settling"
                 )
-                appState.profileManager.reapplyActiveProfile()
-                await appState.profileManager.layoutTask?.value
+                profileManager.reapplyActiveProfile()
+                await profileManager.layoutTask?.value
             }
 
             MenuBarItemManager.diagLog.debug(
